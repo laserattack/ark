@@ -1,0 +1,11 @@
+# exclude patterns
+!buildroot
+
+# add in backup (absolute paths!!)
+~/projects
+~/software
+~/3dparty
+~/.ai_key
+~/.ark/list
+~/.bash_history
+~/.z
