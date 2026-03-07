@@ -44,6 +44,19 @@ sub usage {
     say "  -h, --help        This help";
     say "";
     say "RSYNC AND TAR ARE REQUIRED!!!!";
+    say "";
+    say "Backup list file example:";
+    say "  # exclude patterns";
+    say "  !buildroot";
+    say "  ";
+    say "  # add in backup (absolute paths!!)";
+    say "  ~/projects";
+    say "  ~/software";
+    say "  ~/3dparty";
+    say "  ~/.ai_key";
+    say "  ~/.ark/list";
+    say "  ~/.bash_history";
+    say "  ~/.z";
     exit 0;
 }
 
@@ -53,51 +66,57 @@ sub create_backup {
     die "ERROR: '$BACKUP_PATH' is not a directory" unless -d $BACKUP_PATH;
 
     my @paths;
+    my @exclude;
 
-    open my $fh, '<', $BACKUP_LIST or die "ERROR: Cannot open $BACKUP_LIST: $!";
+    open my $fh, '<', $BACKUP_LIST or die "ERROR: Cannot open '$BACKUP_LIST': $!";
     while (my $src_path = <$fh>) {
         chomp $src_path;
+        next if $src_path =~ /^\s*#/;
 
-        next if $src_path =~ /^\s*#/; # python-like comments
-        $src_path =~ s/^~/$ENV{HOME}/;
         $src_path =~ s/^\s+|\s+$//g;
+        
+        if ($src_path =~ /^!\s*(.+)$/) {
+            my $pattern = $1;
+            if ($pattern) {
+                push @exclude, $pattern;
+                say "Exclude pattern: $pattern" unless $QUIET;
+            }
+            next;
+        }
+        
+        $src_path =~ s/^~/$ENV{HOME}/;
         next unless $src_path;
-
+        
         if (-e $src_path) {
             push @paths, $src_path;
+            say "Will be added to backup: $src_path" unless $QUIET;
         } else {
-            warn "WARNING: $src_path does not exist";
+            warn "WARNING: '$src_path' does not exist";
         }
     }
-    close $fh or warn "WARNING: Error closing $BACKUP_LIST: $!";
+    close $fh or warn "WARNING: Error closing '$BACKUP_LIST': $!";
 
-    die "ERROR: No paths to backup found in $BACKUP_LIST" unless @paths;
+    die "ERROR: No paths to backup found in '$BACKUP_LIST'" unless @paths;
 
-    for my $src (@paths) {
-        my $dest = File::Spec->catfile($BACKUP_PATH, $src);
-
-        # create parent dir if not exists
-        my $dest_dir = dirname($dest);
-        eval { make_path($dest_dir); };
-        die "ERROR: Cannot create path '$dest_dir': $@" if $@;
-        die "ERROR: '$dest_dir' is not a directory" unless -d $dest_dir;
-        
-        my $cmd = "rsync -avx --delete --progress '$src' '$dest' 2>&1";
-
-        my $output = `$cmd`;
-        say $output if $VERBOSE;
-        die "ERROR: rsync failed for $src" if $?;
-
-        say "Synchronized: $src" unless $QUIET;
-    }
-
-    say "Backup completed: $BACKUP_PATH" unless $QUIET;
+    my $src_list = join ' ', map { "'$_'" } @paths;
+    my $exclude_opts = @exclude ? join ' ', map { "--exclude='$_'" } @exclude : '';
+    
+    my $cmd = "rsync -avxR --delete $exclude_opts --progress $src_list '$BACKUP_PATH/' 2>&1";
+    
+    say "Starting backup..." unless $QUIET;
+    say "Running: $cmd" if $VERBOSE;
+    
+    my $output = `$cmd`;
+    say $output if $VERBOSE;
+    die "ERROR: rsync failed" if $?;
+    
+    say "Backup completed: '$BACKUP_PATH'" unless $QUIET;
 
     if ($TAR) {
         my $tar_path   = $BACKUP_PATH . '.tar';
         my $parent_dir = dirname($BACKUP_PATH);
         my $bak_name   = basename($BACKUP_PATH);
-        
+
         my $output = `tar -cf '$tar_path' --xattrs -C '$parent_dir' '$bak_name' 2>&1`;
         die "ERROR: Failed to create tar archive: $output" if $?;
         say "Tar archive created: $tar_path" unless $QUIET;
