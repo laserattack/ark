@@ -5,7 +5,7 @@ A very simple and dirty script that I use for backups
 # Usage
 
 ```
-ark - simple script for making backups
+ark - simple and dirty script for making backups
 Usage: ark [-lptqvh]
 
 Flags:
