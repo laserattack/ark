@@ -1,0 +1,89 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use feature 'say';
+use File::Spec;
+use File::Path 'make_path';
+use File::Basename 'dirname';
+use Getopt::Long qw\:config bundling\;
+
+my $BACKUP_LIST_DEFAULT = "$ENV{HOME}/.mnemosyne/list";
+my $BACKUP_PATH_DEFAULT = "$ENV{HOME}/.mnemosyne/bak";
+
+# flags
+
+my $HELP        = 0;
+my $QUIET       = 0;
+my $TAR         = 0;
+my $BACKUP_LIST = '';
+my $BACKUP_PATH = '';
+
+sub usage {
+    say "Usage: $0 [-ldnqth]";
+    say "";
+    say "Flags:";
+    say "  -l, --list FILE   Backup list file (default: '$BACKUP_LIST_DEFAULT')";
+    say "  -p, --path DIR    Backup path (default: '$BACKUP_PATH_DEFAULT')";
+    say "  -t, --tar         Create tar archive from backup directory";
+    say "  -q, --quiet       Quiet mode (no output)";
+    say "  -h, --help        This help";
+    exit 0;
+}
+
+sub create_backup {
+    make_path($BACKUP_PATH) unless -d $BACKUP_PATH;
+    
+    my @paths;
+    
+    open my $fh, '<', $BACKUP_LIST or die "ERROR: Cannot open $BACKUP_LIST: $!";
+    while (my $src_path = <$fh>) {
+        chomp $src_path;
+
+        next if $src_path =~ /^\s*#/; # python-like comments       
+        $src_path =~ s/~/$ENV{HOME}/;
+        $src_path =~ s/^\s+|\s+$//g;
+        next unless $src_path;
+
+        if (-e $src_path) {
+            push @paths, $src_path;
+            say "Adding to backup: $src_path" unless $QUIET;
+        } else {
+            warn "WARNING: $src_path does not exist, skipping";
+        }
+    }
+    close $fh;
+    
+    die "ERROR: No paths to backup found in $BACKUP_LIST" unless @paths;
+    
+    for my $src (@paths) {
+        my $dest = File::Spec->catfile($BACKUP_PATH, $src);
+
+        # create parent dir if not exists
+        my $dest_dir = dirname($dest);
+        make_path($dest_dir) unless -d $dest_dir;
+        
+        my $cmd = "rsync -avx --delete --progress '$src' '$dest' 2>&1";
+        
+        my $output = `$cmd`;
+        say $output unless $QUIET;
+        warn "WARNING: rsync failed for $src" if $?;
+    }
+
+    say "Backup completed: $BACKUP_PATH" unless $QUIET;
+}
+
+GetOptions(
+        'list|l=s' => \$BACKUP_LIST,
+        'path|p=s' => \$BACKUP_PATH,
+        'tar|t'    => \$TAR,
+        'quiet|q'  => \$QUIET,
+        'help|h'   => \$HELP
+    ) or die "ERROR: Invalid command line options\n";
+
+usage() if $HELP;
+
+$BACKUP_LIST = $BACKUP_LIST_DEFAULT unless $BACKUP_LIST;
+$BACKUP_PATH = $BACKUP_PATH_DEFAULT unless $BACKUP_PATH;
+
+create_backup();
