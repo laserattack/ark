@@ -15,9 +15,11 @@ Flags:
                     and put it near backup dir
   -h, --help        This help
 
-1. RSYNC AND TAR ARE REQUIRED!!!!
-2. IF THE BACKUP DIR IS INSIDE THE DIRECTORIES YOU'RE BACKING UP
-(RECURSION), SOMETHING TERRIBLE CAN HAPPEN!!!!!!!!
+Notes:
+  1. RSYNC IS REQUIRED!!!!
+  2. TAR IS REQUIRED TO USE IT WITH -t/--tar flag!!!!
+  3. IF THE BACKUP DIR IS INSIDE THE DIRECTORIES YOU'RE BACKING UP
+  (RECURSION), SOMETHING TERRIBLE CAN HAPPEN!!!!!!!!
 
 Backup list file example:
   # exclude patterns
