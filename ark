@@ -127,10 +127,10 @@ sub create_backup {
 }
 
 GetOptions(
-        'list|l=s'  => \$BACKUP_LIST,
-        'path|p=s'  => \$BACKUP_PATH,
-        'tar|t'     => \$TAR,
-        'help|h'    => \$HELP
+        'list|l=s' => \$BACKUP_LIST,
+        'path|p=s' => \$BACKUP_PATH,
+        'tar|t'    => \$TAR,
+        'help|h'   => \$HELP
     ) or die "ERROR: Invalid command line options\n";
 
 usage() if $HELP;
