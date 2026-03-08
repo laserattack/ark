@@ -46,6 +46,9 @@ sub usage {
     say "  2. TAR IS REQUIRED TO USE IT WITH -t/--tar flag!!!!";
     say "  3. IF THE BACKUP DIR IS INSIDE THE DIRECTORIES YOU'RE BACKING UP";
     say "  (RECURSION), SOMETHING TERRIBLE CAN HAPPEN!!!!!!!!";
+    say "  4. IF YOU RUN THE SCRIPT TWICE AT THE SAME TIME WITH THE SAME PATHS,";
+    say "  SOMETHING BAD MIGHT HAPPEN!!!!!!!!";
+    say "  5. MAKE SURE YOU HAVE ENOUGH DISK SPACE BEFORE STARTING";
     say "";
     say "Backup list file example:";
     say "  # exclude patterns";
