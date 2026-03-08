@@ -25,6 +25,10 @@ Notes:
   YOU'RE WEIRD, MAN, DON'T DO THAT!!!!!!!!
   5. MAKE SURE YOU HAVE ENOUGH DISK SPACE BEFORE STARTING
 
+Examples:
+  ark
+  ark --tar="/run/media/serr/KINGSTON/bak_$(date +%y%m%dT%H%M%S).tar"
+
 Backup list file example:
   # exclude patterns
   !buildroot
