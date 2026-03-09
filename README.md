@@ -35,23 +35,23 @@ I wrote this script to back up moderately important data to an external hard dri
 **Weekly full backup:**
 
 ```
-chains --dir "/run/media/serr/KINGSTON/.chains" --full
+chains --dir $KINGSTON/chains --full
 ```
 
 **Multiple daily incremental backups:**
 
 ```
-chains --dir "/run/media/serr/KINGSTON/.chains" --incremental
+chains --dir $KINGSTON/chains --incremental
 ```
 
 **Verify backup integrity by restoring to a temporary location:**
 
 ```
-chains --dir "/run/media/serr/KINGSTON/.chains" --goto "/home/serr/projects/temp/" --recover
+chains --dir $KINGSTON/chains --goto "/home/serr/projects/temp/" --recover
 ```
 
 **Display all existing backup chains:**
 
 ```
-chains --dir "/run/media/serr/KINGSTON/.chains" --print
+chains --dir $KINGSTON/chains --print
 ```
