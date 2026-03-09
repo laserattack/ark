@@ -129,8 +129,15 @@ sub main {
     # otherwise, it will make a backup of current dir (pwd)
     die "ERROR: Include file '$include_paths_file' is empty" if -z $include_paths_file;
 
-    # TODO(20260309T142451): проверить что в include_paths_file только абсолютные пути!!
-
+    # only absolute paths in include_paths_file
+    open my $fh, '<', $include_paths_file or die "ERROR: Cannot open file: $!";
+    while (my $line = <$fh>) {
+        chomp $line;
+        next if $line =~ /^\s*$/; # empty lines are OK
+        die "Only absolute paths should be in '$include_paths_file'" unless $line =~ /^\//;
+    }
+    close $fh or die "ERROR: Cannot close file: $!";
+    
     my $timestamp = strftime("%y%m%dT%H%M%S", localtime);
 
     if ($FULL) {
