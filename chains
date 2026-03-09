@@ -85,7 +85,10 @@ sub make_backup {
     my $exclude_patterns_file = $info->{exclude_patterns_file};
     my $backup_file           = $info->{backup_file};
 
-    my @tar_command = ('tar', '-g', $snar_file,
+    my $tar = check_command('tar');
+    die "ERROR: 'tar' program is required, but not found in PATH" unless $tar;
+    
+    my @tar_command = ($tar, '-g', $snar_file,
                        '--one-file-system',
                        '--exclude-from', $exclude_patterns_file,
                        '--files-from', $include_paths_file,
