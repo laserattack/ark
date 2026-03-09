@@ -3,21 +3,19 @@
 use strict;
 use warnings;
 use feature 'say';
-use File::Spec;
 use File::Path 'make_path';
-use File::Basename qw\dirname basename\;
+use File::Spec;
+use POSIX 'strftime';
 use Getopt::Long qw\:config bundling\;
 
-my $BACKUP_LIST_DEFAULT = "$ENV{HOME}/.ark/list";
-my $BACKUP_PATH_DEFAULT = "$ENV{HOME}/.ark/bak";
+my $MAIN_DIR_DEFAULT = "$ENV{HOME}/.ark";
 
 # flags
 
 my $HELP        = 0;
-my $TAR         = 0;
-my $TAR_PATH    = '';
-my $BACKUP_LIST = '';
-my $BACKUP_PATH = '';
+my $INCREMENTAL = 0;
+my $FULL        = 0;
+my $MAIN_DIR    = '';
 
 sub check_command {
     my ($cmd) = @_;
@@ -30,134 +28,171 @@ sub check_command {
 }
 
 sub usage {
-    say "ark - simple and dirty script for making backups";
-    say "Usage: ark [-lpth]";
+    say "ark - simple and dirty script for making incremental backups";
+    say "Usage: ark [-hdi]";
     say "";
     say "Flags:";
-    say "  -l, --list FILE          Backup list file (default: $BACKUP_LIST_DEFAULT)";
-    say "  -p, --path DIR           Backup dir path (default: $BACKUP_PATH_DEFAULT)";
-    say "  -t [PATH], --tar[=PATH]  Create tar archive. If PATH is specified,";
-    say "                           archive will be created at PATH, otherwise";
-    say "                           it will be placed near backup directory";
-    say "  -h, --help               This help";
+    say "  -h, --help         This help";
+    say "  -i, --incremental  Make incremental backup";
+    say "  -f, --full         Make full backup";
+    say "  -d, --dir DIR      Backup dir (default: $MAIN_DIR_DEFAULT)";
     say "";
     say "Notes:";
-    say "  1. RSYNC IS REQUIRED!!!!";
-    say "  2. TAR IS REQUIRED TO USE IT WITH -t/--tar flag!!!!";
-    say "  3. IF THE BACKUP DIR IS INSIDE THE DIRECTORIES YOU'RE BACKING UP";
-    say "  (RECURSION), SOMETHING TERRIBLE CAN HAPPEN!!!!!!!!";
-    say "  4. IF YOU RUN THE SCRIPT TWICE AT THE SAME TIME WITH THE SAME PATHS,";
-    say "  YOU'RE WEIRD, MAN, DON'T DO THAT!!!!!!!!";
-    say "  5. MAKE SURE YOU HAVE ENOUGH DISK SPACE BEFORE STARTING";
+    say "  1. TAR IS REQUIRED";
     say "";
     say "Examples:";
-    say "  ark";
-    say '  ark --tar="/run/media/serr/KINGSTON/baks/bak_$(date +%y%m%dT%H%M%S).tar"';
-    say "";
-    say "Backup list file example:";
-    say "  # exclude patterns";
-    say "  !buildroot";
-    say "  ";
-    say "  # add in backup (absolute paths!!)";
-    say "  ~/projects";
-    say "  ~/software";
-    say "  ~/3dparty";
-    say "  ~/.ai_key";
-    say "  ~/.ark/list";
-    say "  ~/.bash_history";
-    say "  ~/.z";
     exit 0;
 }
 
-sub create_backup {
-    eval { make_path($BACKUP_PATH); };
-    die "ERROR: Cannot create path '$BACKUP_PATH': $@" if $@;
-    die "ERROR: '$BACKUP_PATH' is not a directory" unless -d $BACKUP_PATH;
+sub verify_permissions {
+    my ($path) = @_;
+    die "ERROR: no permissions to read '$path'" unless -r $path;
+    die "ERROR: no permissions to write to '$path'" unless -w $path;
+}
 
-    my @paths;
-    my @exclude;
-
-    open my $fh, '<', $BACKUP_LIST or die "ERROR: Cannot open '$BACKUP_LIST': $!";
-    while (my $src_path = <$fh>) {
-        chomp $src_path;
-        next if $src_path =~ /^\s*#/;
-
-        $src_path =~ s/^\s+|\s+$//g;
-        
-        if ($src_path =~ /^!\s*(.+)$/) {
-            my $pattern = $1;
-            if ($pattern) {
-                push @exclude, $pattern;
-                say "Exclude pattern: $pattern";
-            }
-            next;
-        }
-        
-        $src_path =~ s/^~/$ENV{HOME}/;
-        next unless $src_path;
-        
-        if (-e $src_path || -l $src_path) {
-            push @paths, $src_path;
-            say "Will be synchronized: $src_path";
-        } else {
-            warn "WARNING: '$src_path' does not exist";
-        }
+sub verify_dir {
+    my ($path) = @_;
+    unless (-d $path) {
+        warn "WARNING: '$path' is not a dir";
+        warn "Try to create '$path'...";
+        eval { make_path($path); };
+        die "ERROR: Cannot create path '$path': $@" if $@;
+        die "ERROR: '$path' is not a valid dir" unless -d $path;
     }
-    close $fh or warn "WARNING: Error closing '$BACKUP_LIST': $!";
+    verify_permissions($path);
+}
 
-    die "ERROR: No paths to backup found in '$BACKUP_LIST'" unless @paths;
+sub verify_file {
+    my ($path) = @_;
+    unless (-f $path) {
+        warn "WARNING: '$path' is not a file";
+        warn "Try to create '$path'...";
+        eval {
+            open my $fh, '>', $path or die "Cannot create file: $!";
+            close $fh;
+        };
+        die "ERROR: Cannot create file '$path': $@" if $@;
+        die "ERROR: '$path' is not a valid file" unless -f $path;
+    }
+    verify_permissions($path);
+}
 
-    my @cmd = ('rsync', '-avxR', '--delete');
-    push @cmd, map { "--exclude=$_" } @exclude;
-    push @cmd, '--progress';
-    push @cmd, @paths;
-    push @cmd, "$BACKUP_PATH/";
+sub make_backup {
+    my ($info) = @_;
+
+    my $snar_file             = $info->{snar_file};
+    my $include_paths_file    = $info->{include_paths_file};
+    my $exclude_patterns_file = $info->{exclude_patterns_file};
+    my $backup_file           = $info->{backup_file};
+
+    my @tar_command = ('tar', '-g', $snar_file,
+                       '--one-file-system',
+                       '--files-from', $include_paths_file,
+                       '--exclude-from', $exclude_patterns_file,
+                       '-czf',  $backup_file);
+
+    my $tar_command_string = join ' ', map { $_ =~ /[\s]/ ? "'$_'" : $_ } @tar_command;
+    say "Tar command: $tar_command_string";
+
+    my $ret = system(@tar_command);
+
+    die "Backup failed with exit code: " . ($? >> 8) unless $ret == 0;
+    say "Backup completed: $backup_file";
+}
+
+sub main {
+
+    # ==== PREPARE STRUCT ====
+
+    # check and create if no exists
+    verify_dir($MAIN_DIR);
+    say "Main dir: $MAIN_DIR";
+
+    # check and create if no exists
+    my $include_paths_file = File::Spec->catfile($MAIN_DIR, 'include_paths.txt');
+    verify_file($include_paths_file);
+    say "Include paths file: $include_paths_file";
+
+    # check and create if no exists
+    my $exclude_patterns_file = File::Spec->catfile($MAIN_DIR, 'exclude_patterns.txt');
+    verify_file($exclude_patterns_file);
+    say "Exclude patterns file: $exclude_patterns_file";
+
+    # check and create if no exists
+    my $backups_dir = File::Spec->catdir($MAIN_DIR, 'backups');
+    verify_dir($backups_dir);
+    say "Backups dir: $backups_dir";
+
+    # ==== MAKE BACKUP ====
+
+    # TODO(20260309T142451): проверить что в include_paths_file только абсолютные пути!!
+    # otherwise, it will make a backup of current dir (pwd)
+    die "ERROR: Include file '$include_paths_file' is empty" if -z $include_paths_file;
     
-    say "Starting backup...";
-    my $cmd_string = join ' ', map { $_ =~ /[\s]/ ? "'$_'" : $_ } @cmd;
-    say "Running: $cmd_string";
-    
-    system(@cmd);
-    my $exit_code = $? >> 8;
-    die "rsync failed with exit code $exit_code" if $exit_code != 0;
-    
-    say "Backup completed: $BACKUP_PATH";
+    my $timestamp = strftime("%y%m%dT%H%M%S", localtime);
 
-    if ($TAR) {
-        my $tar_path = $TAR_PATH ? $TAR_PATH : $BACKUP_PATH . '.tar';
+    if ($FULL) {
 
-        if ($TAR_PATH) {
-            die "ERROR: Tar archive must have .tar extension (got: $TAR_PATH)" unless $TAR_PATH =~ /.+\.tar$/;
-            my $tar_dir = dirname($TAR_PATH);
-            eval { make_path($tar_dir); };
-            die "ERROR: Cannot create path '$tar_dir': $@" if $@;
-        }
+        # a chain of incremental backups in a timestamped folder
+        
+        my $backup_dir = File::Spec->catdir($backups_dir, $timestamp);
+        die "ERROR: '$backup_dir' already exists" if -d $backup_dir;
+        verify_dir($backup_dir);
+        say "Creating new backup chain in: $backup_dir";
+        
+        # tar will create it itself if no exists
+        my $snar_file = File::Spec->catfile($backup_dir, 'inc.snar');
+        say "Snar file: $snar_file";
+        my $backup_file = File::Spec->catfile($backup_dir, "backup_${timestamp}.tar.gz");
 
-        my $parent_dir = dirname($BACKUP_PATH);
-        my $bak_name   = basename($BACKUP_PATH);
+        die "ERROR: Backup file '$backup_file' already exists" if -f $backup_file;
+        
+        my $info = {
+            snar_file             => $snar_file,
+            include_paths_file    => $include_paths_file,
+            exclude_patterns_file => $exclude_patterns_file,
+            backup_file           => $backup_file,
+        };
 
-        my @tar_cmd = ('tar', '-cf', $tar_path, '--xattrs', '-C', $parent_dir, $bak_name);
-        my $cmd_string = join ' ', map { $_ =~ /[\s]/ ? "'$_'" : $_ } @tar_cmd;
-        say "Running tar: $cmd_string";
-        system(@tar_cmd);
-        my $tar_exit = $? >> 8;
-        die "ERROR: Failed to create tar archive" if $tar_exit != 0;
+        make_backup($info);
+
+    } elsif ($INCREMENTAL) {
+        opendir(my $dh, $backups_dir) or return undef;
+        my @dirs = grep { -d "$backups_dir/$_" && /^\d{6}T\d{6}$/ } readdir($dh);
+        closedir($dh);
+        @dirs = sort { $b cmp $a } @dirs;
+        my $backup_dir = $dirs[0] ? File::Spec->catdir($backups_dir, $dirs[0]) : undef;
+
+        die "ERROR: No existing backup chain found" unless $backup_dir;
+
+        # tar will create it itself if no exists
+        my $snar_file = File::Spec->catfile($backup_dir, 'inc.snar');
+        say "Snar file: $snar_file";
+        my $backup_file = File::Spec->catfile($backup_dir, "backup_${timestamp}.tar.gz");
+
+        die "ERROR: Backup file '$backup_file' already exists" if -f $backup_file;
+        
+        my $info = {
+            snar_file             => $snar_file,
+            include_paths_file    => $include_paths_file,
+            exclude_patterns_file => $exclude_patterns_file,
+            backup_file           => $backup_file,
+        };
+
+        make_backup($info);
+        
     }
 }
 
 GetOptions(
-        'list|l=s' => \$BACKUP_LIST,
-        'path|p=s' => \$BACKUP_PATH,
-        'tar|t:s'  => sub { $TAR = 1; $TAR_PATH = $_[1]; },
-        'help|h'   => \$HELP
+        'help|h'        => \$HELP,
+        'dir|d=s'       => \$MAIN_DIR,
+        'incremental|i' => \$INCREMENTAL,
+        'full|f'        => \$FULL,
     ) or die "ERROR: Invalid command line options\n";
 
 usage() if $HELP;
 
-$BACKUP_LIST = $BACKUP_LIST_DEFAULT unless $BACKUP_LIST;
-$BACKUP_PATH = $BACKUP_PATH_DEFAULT unless $BACKUP_PATH;
+$MAIN_DIR = $MAIN_DIR_DEFAULT unless $MAIN_DIR;
 
-die "Download 'rsync' dude, plss"         if !check_command('rsync');
-die "You dont have 'tar' program?? Wtf??" if $TAR && !check_command('tar');
-
-create_backup();
+main();
