@@ -39,8 +39,6 @@ sub usage {
     say "";
     say "Notes:";
     say "  1. TAR IS REQUIRED";
-    say "";
-    say "Examples:";
     exit 0;
 }
 
