@@ -27,3 +27,25 @@ Notes:
   3. Always verify your backups can be restored
   4. EXCLUDE BACKUP DIR FROM BACKUP
 ```
+
+# Examples
+
+I wrote this to back up medium-important data to an external hard drive, so the usual usage looks like this
+
+Once a week
+
+```
+chains --dir "/run/media/serr/KINGSTON/.chains" --full
+```
+
+Several times a day
+
+```
+chains --dir "/run/media/serr/KINGSTON/.chains" --incremental
+```
+
+Restoring a backup to selectively check if everything is working properly
+
+```
+chains --dir "/run/media/serr/KINGSTON/.chains" --goto "/home/serr/projects/temp/" --recover
+```
