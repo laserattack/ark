@@ -5,6 +5,7 @@ use warnings;
 use feature 'say';
 use File::Path 'make_path';
 use File::Spec;
+use Cwd;
 use POSIX 'strftime';
 use Getopt::Long qw\:config bundling\;
 
@@ -17,6 +18,7 @@ my $INCREMENTAL = 0;
 my $FULL        = 0;
 my $RECOVER     = undef;
 my $MAIN_DIR    = undef;
+my $GOTO        = undef;
 
 sub check_command {
     my ($cmd) = @_;
@@ -30,7 +32,7 @@ sub check_command {
 
 sub usage {
     say "chains - simple script for making incremental backups";
-    say "Usage: chains [-hifrd]";
+    say "Usage: chains [-hifrgd]";
     say "";
     say "Flags:";
     say "  -h, --help                 This help";
@@ -40,6 +42,8 @@ sub usage {
     say "                             If TIMESTAMP omitted, recovers latest state.";
     say "                             TIMESTAMP format: YYMMDDTHHMMSS (e.g. 250309T143045)";
     say "                             Use 'latest' explicitly if needed (default when omitted)";
+    say "  -g, --goto DIR             Change to DIR before any operation";
+    say "                             If DIR omitted, goes to HOME directory";
     say "  -d, --dir DIR              Backup dir (default: $MAIN_DIR_DEFAULT)";
     say "";
     say "Notes:";
@@ -302,9 +306,18 @@ GetOptions(
         'incremental|i' => \$INCREMENTAL,
         'full|f'        => \$FULL,
         'recover|r:s'   => \$RECOVER,
+        'goto|g:s'      => \$GOTO,
     ) or die "ERROR: Invalid command line options";
 
 usage() if $HELP;
+
+if (defined $GOTO) {
+    $GOTO = $ENV{HOME} if $GOTO eq '';
+    say "INFO: Changing directory to: $GOTO";
+    verify_dir($GOTO);
+    chdir $GOTO or die "ERROR: Cannot change to directory '$GOTO': $!";
+    say "INFO: Now in: " . getcwd();
+}
 
 if (defined $RECOVER) {
     if ($RECOVER eq '' || $RECOVER eq 'latest') {
