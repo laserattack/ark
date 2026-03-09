@@ -87,8 +87,8 @@ sub make_backup {
 
     my @tar_command = ('tar', '-g', $snar_file,
                        '--one-file-system',
-                       '--files-from', $include_paths_file,
                        '--exclude-from', $exclude_patterns_file,
+                       '--files-from', $include_paths_file,
                        '-czf',  $backup_file);
 
     my $tar_command_string = join ' ', map { $_ =~ /[\s]/ ? "'$_'" : $_ } @tar_command;
