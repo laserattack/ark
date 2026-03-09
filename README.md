@@ -55,3 +55,5 @@ chains -r -d $KINGSTON/chains -g "/home/serr/projects/temp/"
 ```
 chains -pd $KINGSTON/chains
 ```
+
+> Note: $KINGSTON is a variable defined in my `.bashrc` pointing to the mount point of my external drive
