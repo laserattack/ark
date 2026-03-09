@@ -68,8 +68,8 @@ sub verify_file {
         say "INFO: '$path' is not a file";
         say "INFO: Try to create '$path'...";
         eval {
-            open my $fh, '>', $path or die "Cannot create file: $!";
-            close $fh;
+            open my $fh, '>', $path or die "ERROR: Cannot create file: $!";
+            close $fh or die "ERROR: Cannot close file: $!";
         };
         die "ERROR: Cannot create file '$path': $@" if $@;
         die "ERROR: '$path' is not a valid file" unless -f $path;
@@ -96,7 +96,7 @@ sub make_backup {
 
     my $ret = system(@tar_command);
 
-    die "Backup failed with exit code: " . ($? >> 8) unless $ret == 0;
+    die "ERROR: Backup failed with exit code: " . ($? >> 8) unless $ret == 0;
     say "Backup completed: $backup_file";
 }
 
@@ -163,9 +163,9 @@ sub main {
         # incremental backup = backup to latest backup chain
 
         # try found latest backup chain
-        opendir(my $dh, $backups_dir) or die "ERROR: Cant open dir '$backups_dir'";
+        opendir(my $dh, $backups_dir) or die "ERROR: Cannot open dir '$backups_dir': $!";
         my @dirs = grep { -d "$backups_dir/$_" && /^since_\d{6}T\d{6}$/ } readdir($dh);
-        closedir($dh);
+        closedir($dh) or die "ERROR: Cannot close dir '$backups_dir': $!";
         @dirs = sort { $b cmp $a } @dirs;
         my $backup_dir = $dirs[0] ? File::Spec->catdir($backups_dir, $dirs[0]) : undef;
 
@@ -195,7 +195,7 @@ GetOptions(
         'dir|d=s'       => \$MAIN_DIR,
         'incremental|i' => \$INCREMENTAL,
         'full|f'        => \$FULL,
-    ) or die "ERROR: Invalid command line options\n";
+    ) or die "ERROR: Invalid command line options";
 
 usage() if $HELP;
 
