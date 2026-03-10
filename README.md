@@ -36,25 +36,25 @@ This script was written for back up moderately important data to an external dri
 **Weekly full backup:**
 
 ```
-chains -fm $KINGSTON/chains
+chains -fm $KINGSTON/chains/
 ```
 
 **Daily incremental backups (run as often as needed):**
 
 ```
-chains -im $KINGSTON/chains
+chains -im $KINGSTON/chains/
 ```
 
 **Verify backup integrity by restoring to a temporary location:**
 
 ```
-chains -rm $KINGSTON/chains -C /home/serr/projects/temp
+chains -rm $KINGSTON/chains/ -C ~/projects/temp/
 ```
 
 **Display all existing backup chains:**
 
 ```
-chains -pm $KINGSTON/chains
+chains -pm $KINGSTON/chains/
 ```
 
 > Note: $KINGSTON is a variable defined in my `.bashrc` pointing to the mount point of my external drive
