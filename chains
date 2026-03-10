@@ -293,8 +293,39 @@ sub make_backup {
 
     my $ret = $VERBOSE ? system(@tar_command) : suppress_output(sub { system(@tar_command) });
 
-    die "ERROR: Backup failed with exit code: " . ($? >> 8) . "\n" unless $ret == 0;
-    say "INFO: Backup completed: $backup_file";
+    # ================ FROM info tar ================
+    #    Possible exit codes of GNU ‘tar’ are summarized in the following
+    # table:
+
+    # 0
+    #      ‘Successful termination’.
+
+    # 1
+    #      ‘Some files differ’.  If tar was invoked with ‘--compare’
+    #      (‘--diff’, ‘-d’) command line option, this means that some files in
+    #      the archive differ from their disk counterparts (*note compare::).
+    #      If tar was given ‘--create’, ‘--append’ or ‘--update’ option, this
+    #      exit code means that some files were changed while being archived
+    #      and so the resulting archive does not contain the exact copy of the
+    #      file set.
+
+    # 2
+    #      ‘Fatal error’.  This means that some fatal, unrecoverable error
+    #      occurred.
+
+    my $exitcode = ($? >> 8);
+    if ($exitcode == 0) {
+        say "INFO: Backup '$backup_file' completed (exitcode: $exitcode)";
+    } elsif ($exitcode == 1) {
+        warn "WARNING: Backup '$backup_file' completed with changed files (exitcode: $exitcode)\n";
+    } elsif ($exitcode == 2) {
+        warn "ERROR: Backup '$backup_file' failed (exitcode: $exitcode)\n";
+        say "INFO: Deleting incomplete archive '$backup_file'";
+        unlink $backup_file or die "ERROR: Could not delete incomplete archive: $backup_file\n" if -f $backup_file;
+        die "INFO: Incomplete archive was deleted\n"
+    } else {
+        die "ERROR: unexpected exitcode: $exitcode. WTF???\n";
+    }
 }
 
 sub main {
