@@ -8,7 +8,7 @@ Simple script for backups
 
 ```
 chains - incremental backups without any bullshit
-Usage: chains [-hmifrCpv]
+Usage: chains [-hmifrwCpv]
 
 Flags:
   -h, --help                 This help
@@ -18,6 +18,8 @@ Flags:
   -r, --recover [TIMESTAMP]  Restore the chain to the specified timestamp
                              If TIMESTAMP omitted, recovers latest state
                              TIMESTAMP format: YYMMDDTHHMMSS (e.g. 250309T143045)
+  -w, --verify [TIMESTAMP]   Verify integrity of chain up to specified timestamp
+                             If TIMESTAMP omitted, verifies entire latest chain
   -C, --directory DIR        Change to DIR before any operation
                              If DIR omitted, goes to HOME directory
   -p, --print                Print all backup chains structure
@@ -46,7 +48,13 @@ chains -fm $KINGSTON/chains/
 chains -im $KINGSTON/chains/
 ```
 
-**Verify backup integrity by restoring to a temporary location:**
+**Verify backup integrity:**
+
+```
+chains -wm $KINGSTON/chains/
+```
+
+**Restore backup:**
 
 ```
 chains -rm $KINGSTON/chains/ -C ~/projects/temp/
