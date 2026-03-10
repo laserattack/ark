@@ -67,7 +67,7 @@ sub go_ahead {
     $input    = lc($input);
 
     return 1 if $input eq '';
-    return $input =~ /^(y|yes|yas)$/? 1: 0;
+    return $input =~ /^(y|yes|yas)$/ ? 1 : 0;
 }
 
 sub suppress_output {
@@ -212,7 +212,7 @@ sub extract {
 
     say "INFO: Extracting '$src'";
 
-    my $flags = $VERBOSE? '-vxzf': '-xzf';
+    my $flags = $VERBOSE ? '-vxzf' : '-xzf';
     my @cmd = ($tar, '--xattrs', $flags, $src, '-C', $dest);
     my $ret = $VERBOSE ? system(@cmd) : suppress_output(sub { system(@cmd) });
 
@@ -281,7 +281,7 @@ sub make_backup {
     my $tar = check_command('tar');
     die "ERROR: 'tar' program is required, but not found in PATH\n" unless $tar;
 
-    my $flags = $VERBOSE? '-vg': '-g';
+    my $flags = $VERBOSE ? '-vg' : '-g';
     my @tar_command = ($tar, $flags, $snar_file,
                        '--one-file-system', '--xattrs',
                        '--exclude-from', $exclude_patterns_file,
