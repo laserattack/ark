@@ -49,7 +49,7 @@ chains -im $KINGSTON/chains
 **Verify backup integrity by restoring to a temporary location:**
 
 ```
-chains -r -m $KINGSTON/chains -C /home/serr/projects/temp
+chains -rm $KINGSTON/chains -C /home/serr/projects/temp
 ```
 
 **Display all existing backup chains:**
