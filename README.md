@@ -84,7 +84,7 @@ Optionally, you can add the script to your PATH
 
 # Notes
 
-When you run chains for the first time, it automatically creates the following structure in your main directory (default: `~/.chains` or custom path with `-m` flag):
+When you run **chains**, it automatically checks and creates (if missing) the required directory structure in your main directory (default: `~/.chains` or custom path with `-m` flag):
 
 ```
 MAIN_DIR/
