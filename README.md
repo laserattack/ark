@@ -121,7 +121,7 @@ chains -fm /path/to/main/dir
 
 ```
 MAIN_DIR/
-├── chains
+├── chains                              # All backups stored here
 │   └── since_260309T200625             # Chain directory
 │       ├── [2.0G] 260309T200625.tar.gz # Full backup
 │       └── incremental.snar            # Metadata file for incremental backups
