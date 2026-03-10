@@ -12,7 +12,7 @@ Usage: chains [-hmifrCpv]
 
 Flags:
   -h, --help                 This help
-  -m, --main-directory DIR   Main program directory (default: /home/serr/.chains)
+  -m, --main-directory DIR   Main program directory (default: ~/.chains)
   -i, --incremental          Make incremental backup (to the last chain)
   -f, --full                 Make full backup (new chain)
   -r, --recover [TIMESTAMP]  Restore the chain to the specified timestamp

@@ -39,7 +39,7 @@ sub usage {
     say "";
     say "Flags:";
     say "  -h, --help                 This help";
-    say "  -m, --main-directory DIR   Main program directory (default: $MAIN_DIR_DEFAULT)";
+    say "  -m, --main-directory DIR   Main program directory (default: ~/.chains)";
     say "  -i, --incremental          Make incremental backup (to the last chain)";
     say "  -f, --full                 Make full backup (new chain)";
     say "  -r, --recover [TIMESTAMP]  Restore the chain to the specified timestamp";
