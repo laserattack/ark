@@ -214,7 +214,7 @@ sub extract {
     say "INFO: Extracting '$src'";
 
     my $flags = $VERBOSE? '-vxzf': '-xzf';
-    my @cmd = ($tar, $flags, $src, '-C', $dest);
+    my @cmd = ($tar, '--xattrs', $flags, $src, '-C', $dest);
     my $ret = $VERBOSE ? system(@cmd) : suppress_output(sub { system(@cmd) });
 
     die "ERROR: Extract failed with exit code: " . ($? >> 8) . "\n" unless $ret == 0;
