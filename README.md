@@ -7,21 +7,21 @@ Simple script that I use for backups
 # Usage
 
 ```
-chains - simple script for making incremental backups
-Usage: chains [-hpifrgd]
+chains - incremental backups without any bullshit
+Usage: chains [-hmifrCp]
 
 Flags:
   -h, --help                 This help
-  -p, --print                Print all backup chains structure
-  -i, --incremental          Make incremental backup
-  -f, --full                 Make full backup
-  -r, --recover [TIMESTAMP]  Recover backup chain to current dir.
-                             If TIMESTAMP omitted, recovers latest state.
+  -m, --main-directory DIR   Main program directory (default: /home/serr/.chains)
+  -i, --incremental          Make incremental backup (to the last chain)
+  -f, --full                 Make full backup (new chain)
+  -r, --recover [TIMESTAMP]  Restoring the chain to the specified timestamp
+                             If TIMESTAMP omitted, recovers latest state
                              TIMESTAMP format: YYMMDDTHHMMSS (e.g. 250309T143045)
                              Use 'latest' explicitly if needed (default when omitted)
-  -g, --goto DIR             Change to DIR before any operation
+  -C, --directory DIR        Change to DIR before any operation
                              If DIR omitted, goes to HOME directory
-  -d, --dir DIR              Backup dir (default: /home/serr/.chains)
+  -p, --print                Print all backup chains structure
 
 Notes:
   1. TAR IS REQUIRED
@@ -32,30 +32,30 @@ Notes:
 
 # Examples
 
-I wrote this script to back up moderately important data to an external drive. Here's how I typically use it:
+This script was written for back up moderately important data to an external drive. Here's how I typically use it:
 
 **Weekly full backup:**
 
 ```
-chains -fd $KINGSTON/chains
+chains -fm $KINGSTON/chains
 ```
 
 **Daily incremental backups (run as often as needed):**
 
 ```
-chains -id $KINGSTON/chains
+chains -im $KINGSTON/chains
 ```
 
 **Verify backup integrity by restoring to a temporary location:**
 
 ```
-chains -r -d $KINGSTON/chains -g "/home/serr/projects/temp/"
+chains -r -m $KINGSTON/chains -C /home/serr/projects/temp
 ```
 
 **Display all existing backup chains:**
 
 ```
-chains -pd $KINGSTON/chains
+chains -pm $KINGSTON/chains
 ```
 
 > Note: $KINGSTON is a variable defined in my `.bashrc` pointing to the mount point of my external drive
