@@ -48,6 +48,7 @@ sub usage {
     say "                             TIMESTAMP format: YYMMDDTHHMMSS (e.g. 250309T143045)";
     say "  -w, --verify [TIMESTAMP]   Verify integrity of chain up to specified timestamp";
     say "                             If TIMESTAMP omitted, verifies entire latest chain";
+    say "                             TIMESTAMP format: YYMMDDTHHMMSS (e.g. 250309T143045)";
     say "  -C, --directory DIR        Change to DIR before any operation";
     say "                             If DIR omitted, goes to HOME directory";
     say "  -p, --print                Print all backup chains structure";
