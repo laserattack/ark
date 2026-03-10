@@ -82,6 +82,17 @@ And use
 
 Optionally, you can add the script to your PATH
 
+# Notes
+
+When you run chains for the first time, it automatically creates the following structure in your main directory (default: `~/.chains` or custom path with `-m` flag):
+
+```
+MAIN_DIR/
+├── include_paths.txt    # List paths to backup (one per line, absolute paths only)
+├── exclude_patterns.txt # Patterns to exclude (tar format)
+└── chains/              # All backups stored here
+```
+
 # Requirements
 
 - Linux system
