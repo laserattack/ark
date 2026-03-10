@@ -8,6 +8,8 @@ Why another backup tool? Because most existing solutions are way too complicated
 
 I wanted something **dumb and simple**. A tool that just does incremental backups and nothing else. No dependencies, no magic. Just plain `tar.gz` files that you can access on any Linux system with nothing but `tar`
 
+This entire script is essentially a convenient interface to `tar`
+
 # Usage
 
 ```
