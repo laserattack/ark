@@ -283,7 +283,7 @@ sub make_backup {
 
     my $flags = $VERBOSE? '-vg': '-g';
     my @tar_command = ($tar, $flags, $snar_file,
-                       '--one-file-system',
+                       '--one-file-system', '--xattrs',
                        '--exclude-from', $exclude_patterns_file,
                        '--files-from', $include_paths_file,
                        '-czf',  $backup_file);
