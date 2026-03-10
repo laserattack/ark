@@ -22,7 +22,6 @@ Flags:
                              If TIMESTAMP omitted, verifies entire latest chain
                              TIMESTAMP format: YYMMDDTHHMMSS (e.g. 250309T143045)
   -C, --directory DIR        Change to DIR before any operation
-                             If DIR omitted, goes to HOME directory
   -p, --print                Print all backup chains structure
   -v, --verbose              Verbosely list files processed
 
