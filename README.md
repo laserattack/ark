@@ -14,9 +14,9 @@ This entire script is essentially a convenient interface to `tar`
 
 ```
 chains - incremental backups without any bullshit
-Usage: chains [-hmifrwCpv]
+Usage: chains [OPTION]...
 
-Flags:
+Options:
   -h, --help                 This help
   -m, --main-directory DIR   Main program directory (default: ~/.chains)
   -i, --incremental          Make incremental backup (to the last chain)

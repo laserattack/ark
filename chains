@@ -36,9 +36,9 @@ sub check_command {
 
 sub usage {
     say "chains - incremental backups without any bullshit";
-    say "Usage: chains [-hmifrwCpv]";
+    say "Usage: chains [OPTION]...";
     say "";
-    say "Flags:";
+    say "Options:";
     say "  -h, --help                 This help";
     say "  -m, --main-directory DIR   Main program directory (default: ~/.chains)";
     say "  -i, --incremental          Make incremental backup (to the last chain)";
