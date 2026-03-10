@@ -4,6 +4,10 @@
 
 Simple script for backups
 
+Why another backup tool? Because most existing solutions are way too complicated. They offer a ton of shit like support for hundreds of protocols, encryption, rotation policies, and all kinds of enterprise bullshit. And worst of all — they store your data in their own format. Good luck restoring anything if you don't have the exact binary on hand
+
+I wanted something **dumb and simple**. A tool that just does incremental backups and nothing else. No dependencies, no magic. Just plain `tar.gz` files that you can access on any Linux system with nothing but `tar`
+
 # Usage
 
 ```
