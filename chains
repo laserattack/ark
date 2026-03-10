@@ -55,7 +55,7 @@ sub usage {
     say "  -v, --verbose              Verbosely list files processed";
     say "";
     say "Notes:";
-    say "  1. TAR IS REQUIRED";
+    say "  1. GNU TAR IS REQUIRED";
     say "  2. Interrupting backup creation may leave incomplete archives";
     say "  3. Always verify your backups can be restored";
     say "  4. EXCLUDE BACKUP DIR FROM BACKUP";

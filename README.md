@@ -27,7 +27,7 @@ Flags:
   -v, --verbose              Verbosely list files processed
 
 Notes:
-  1. TAR IS REQUIRED
+  1. GNU TAR IS REQUIRED
   2. Interrupting backup creation may leave incomplete archives
   3. Always verify your backups can be restored
   4. EXCLUDE BACKUP DIR FROM BACKUP
@@ -106,4 +106,4 @@ MAIN_DIR/
 
 - Linux system
 - Perl 5.10 or newer
-- tar
+- GNU tar
