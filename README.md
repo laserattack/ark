@@ -96,15 +96,109 @@ And use
 
 Optionally, you can add the script to your PATH
 
-# Notes
+# How it works
 
-When you run **chains**, it automatically checks and creates (if missing) the required directory structure in your main directory (default: `~/.chains` or custom path with `-m` flag):
+When you run chains, it automatically checks and creates (if missing) the required directory structure in your main directory (default: `~/.chains` or custom path with `-m` flag):
 
 ```
 MAIN_DIR/
 ├── include_paths.txt    # List paths to backup (one per line, absolute paths only)
 ├── exclude_patterns.txt # Patterns to exclude (tar format)
 └── chains/              # All backups stored here
+```
+
+A **chain** is a sequence of backups (`tar.gz` archives), where the first backup is full and all subsequent backups are incremental (containing only changes since the previous backup).
+
+## Starting a new chain
+
+To start a new chain, create a full backup with:
+
+```
+chains -fm /path/to/main/dir
+```
+
+chains will create a folder for the chain and place the first backup there:
+
+```
+MAIN_DIR/
+├── chains
+│   └── since_260309T200625             # Chain directory
+│       ├── [2.0G] 260309T200625.tar.gz # Full backup
+│       └── incremental.snar            # Metadata file for incremental backups
+├── exclude_patterns.txt                # Patterns to exclude (tar format)
+└── include_paths.txt                   # List paths to backup (one per line, absolute paths only)
+```
+
+## Adding incremental backups
+
+Once a chain exists, add incremental backups with:
+
+```
+chains -im /path/to/main/dir
+```
+
+After the first incremental backup, the chain folder will look like this:
+
+```
+MAIN_DIR/
+├── chains                              # All backups stored here
+│   └── since_260309T200625             # Chain directory
+│       ├── [2.0G] 260309T200625.tar.gz # Full backup
+│       ├── [1.2M] 260309T202739.tar.gz # First incremental backup
+│       └── incremental.snar            # Metadata
+├── exclude_patterns.txt                # Patterns to exclude (tar format)
+└── include_paths.txt                   # List paths to backup (one per line, absolute paths only)
+```
+
+As you continue taking incremental backups, they are added to the same chain:
+
+```
+MAIN_DIR/
+├── chains                              # All backups stored here
+│   └── since_260309T200625             # Chain directory
+│       ├── [2.0G] 260309T200625.tar.gz # Full backup
+│       ├── [1.2M] 260309T202739.tar.gz # Incremental backup
+│       ├── [1.2M] 260309T202747.tar.gz # Incremental backup
+│       ├── [1.5M] 260309T205505.tar.gz # Incremental backup
+│       ├── [1.4M] 260309T211003.tar.gz # Incremental backup
+│       ├── [1.7M] 260309T220534.tar.gz # Incremental backup
+│       ├── [1.2M] 260309T221151.tar.gz # Incremental backup
+│       ├── [1.5M] 260310T131826.tar.gz # Incremental backup
+│       ├── [1.5M] 260310T133139.tar.gz # Incremental backup
+│       ├── [221M] 260310T133328.tar.gz # Incremental backup (lots of changes)
+│       ├── [1.3M] 260310T133457.tar.gz # Incremental backup
+│       ├── [1.4M] 260310T135812.tar.gz # Incremental backup
+│       ├── [1.6M] 260310T153300.tar.gz # Incremental backup
+│       ├── [1.3M] 260310T153454.tar.gz # Incremental backup
+│       ├── [1.3M] 260310T153504.tar.gz # Incremental backup
+│       ├── [1.3M] 260310T153509.tar.gz # Incremental backup
+│       ├── [1.6M] 260310T154758.tar.gz # Incremental backup
+│       ├── [1.9M] 260310T164949.tar.gz # Incremental backup
+│       └── incremental.snar            # Metadata
+├── exclude_patterns.txt                # Patterns to exclude (tar format)
+└── include_paths.txt                   # List paths to backup (one per line, absolute paths only)
+```
+
+When you want to start a fresh chain (for example, to create a new full backup baseline), simply run:
+
+```
+chains -fm /path/to/main/dir
+```
+
+This creates a new timestamped folder (e.g., since_260310T170000) and places a new full backup there. All subsequent incremental backups with `-i` will be added to this newest chain.
+
+## Restoring data
+
+To restore your data to a state corresponding to a specific backup in a chain, you need to extract all backups from the first (full) backup up to and including the target backup, extracting them all into the same directory. This applies the changes sequentially, recreating the exact state at that point in time.
+
+You can do this manually, or use **chains**:
+
+```
+# Restore to the latest backup
+chains -rm /path/to/main/dir -C /path/to/output/dir
+
+# Restore to a specific timestamp
+chains -r 260309T205505 -m /path/to/main/dir -C /path/to/output/dir
 ```
 
 # Requirements
