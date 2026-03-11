@@ -242,3 +242,8 @@ chains -r 260309T205505 -m /path/to/main/dir -C /path/to/output/dir
 - Linux system
 - Perl 5.10 or newer
 - GNU tar
+
+# References
+
+- [GNU tar manual](https://www.gnu.org/software/tar/manual/html_node/tar_toc.html)
+- [stackoverflow.com/questions/2001709/how-to-check-if-a-unix-tar-gz-file-is-a-valid-file-without-uncompressing](https://stackoverflow.com/questions/2001709/how-to-check-if-a-unix-tar-gz-file-is-a-valid-file-without-uncompressing)
