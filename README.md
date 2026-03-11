@@ -22,11 +22,11 @@ Options:
   -i, --incremental          Make incremental backup (to the last chain)
   -f, --full                 Make full backup (new chain)
   -r, --recover [TIMESTAMP]  Restore the chain to the specified timestamp
+                             TIMESTAMP: YYMMDDTHHMMSS | 'latest'
                              If TIMESTAMP omitted, recovers latest state
-                             TIMESTAMP can be: YYMMDDTHHMMSS or 'latest'
-  -w, --verify [TIMESTAMP]   Verify integrity of chain
-                             Format: TIMESTAMP | TIMESTAMP:TIMESTAMP
-                             TIMESTAMP: YYMMDDTHHMMSS or 'latest'
+  -w, --verify [RANGE]       Verify integrity of chain
+                             TIMESTAMP: YYMMDDTHHMMSS | 'latest'
+                             RANGE: TIMESTAMP | TIMESTAMP:TIMESTAMP
                              Examples: 250309T143045
                                        latest
                                        250309T143045:250310T102030
