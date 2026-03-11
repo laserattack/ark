@@ -520,14 +520,14 @@ if ($RECOVER) {
 
 if ($VERIFY) {
     my $timestamp_pattern = qr/(?:\d{6}T\d{6}|latest)/;
-    my $timestamp         = shift @ARGV;
+    my $range             = shift @ARGV;
 
-    if ($timestamp && ($timestamp =~ /^$timestamp_pattern$/ ||
-                       $timestamp =~ /^$timestamp_pattern:$timestamp_pattern$/)) {
-        $VERIFY = $timestamp;
+    if ($range && ($range =~ /^$timestamp_pattern$/ ||
+                   $range =~ /^$timestamp_pattern:$timestamp_pattern$/)) {
+        $VERIFY = $range;
         say "INFO: Verify chain mode: $VERIFY";
     } else {
-        unshift @ARGV, $timestamp if $timestamp;
+        unshift @ARGV, $range if $range;
     }
 }
 
