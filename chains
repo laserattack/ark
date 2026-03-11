@@ -44,10 +44,10 @@ sub usage {
     say "  -i, --incremental          Make incremental backup (to the last chain)";
     say "  -f, --full                 Make full backup (new chain)";
     say "  -r, --recover [TIMESTAMP]  Restore the chain to the specified timestamp";
-    say "                             TIMESTAMP: YYMMDDTHHMMSS | 'latest'";
+    say "                             TIMESTAMP: YYMMDDTHHMMSS | latest";
     say "                             If TIMESTAMP omitted, recovers latest state";
     say "  -w, --verify [RANGE]       Verify integrity of chain";
-    say "                             TIMESTAMP: YYMMDDTHHMMSS | 'latest'";
+    say "                             TIMESTAMP: YYMMDDTHHMMSS | latest";
     say "                             RANGE: TIMESTAMP | TIMESTAMP:TIMESTAMP";
     say "                             Examples: 250309T143045";
     say "                                       latest";
