@@ -23,10 +23,15 @@ Options:
   -f, --full                 Make full backup (new chain)
   -r, --recover [TIMESTAMP]  Restore the chain to the specified timestamp
                              If TIMESTAMP omitted, recovers latest state
-                             TIMESTAMP format: YYMMDDTHHMMSS (e.g. 250309T143045)
-  -w, --verify [TIMESTAMP]   Verify integrity of chain up to specified timestamp
-                             If TIMESTAMP omitted, verifies entire latest chain
-                             TIMESTAMP format: YYMMDDTHHMMSS (e.g. 250309T143045)
+                             TIMESTAMP can be: YYMMDDTHHMMSS or 'latest'
+  -w, --verify [TIMESTAMP]   Verify integrity of chain
+                             Format: TIMESTAMP | TIMESTAMP:TIMESTAMP
+                             TIMESTAMP: YYMMDDTHHMMSS or 'latest'
+                             Examples: 250309T143045
+                                       latest
+                                       250309T143045:250310T102030
+                                       250309T143045:latest
+                                       latest:latest
   -C, --directory DIR        Change to DIR before any operation
   -p, --print                Print all backup chains structure
   -v, --verbose              Verbosely list files processed
