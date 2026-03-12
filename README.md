@@ -69,7 +69,7 @@ chains -fm $KINGSTON/chains/
 chains -im $KINGSTON/chains/
 ```
 
-**Verify backup integrity:**
+**Verify integrity of backup chain (check if all archives in chain/subchain can be unpacked):**
 
 ```
 chains -wm $KINGSTON/chains/
