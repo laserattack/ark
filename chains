@@ -449,14 +449,10 @@ sub make_backup {
     }
 
     if (-f $backup_file) {
-        print "INFO: Verify backup '$backup_file'? [Y/n] ";
-        if (go_ahead()) {
-            verify($backup_file);
-        } else {
-            say "INFO: Always verify your backups!\n" .
-                "INFO: Even if tar returns 0 (success), the backup might be corrupted — for example, " .
-                "if you interrupted the program, or for some other reason";
-        }
+        say "INFO: Always verify your backups!";
+        say "INFO: A successful exit code (0) from tar does not guarantee the backup is valid";
+        say "INFO: For example, if the program execution was interrupted (by you or for any other reason)";
+        say "INFO: You can verify backups using 'chains -w ...'";
     }
 }
 
