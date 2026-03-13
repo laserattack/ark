@@ -89,7 +89,7 @@ sub usage {
     exit 0;
 }
 
-# only one process can run at a time
+# only one chains process can run at a time
 
 sub acquire_lock {
     if (-f $LOCKFILE) {
