@@ -282,6 +282,8 @@ my $LOCK_ACQUIRE = 0;
 
 my $USE_COLOR = 0;
 
+my $TIMESTAMP_FORMAT = qr/\d{6}T\d{6}/;
+
 # turn off buffering
 $| = 1;
 
@@ -299,8 +301,6 @@ my $RECOVER         = undef;
 my $VERIFY          = undef;
 my $MAIN_DIR        = undef;
 my $DIR             = undef;
-
-my $TIMESTAMP_FORMAT = qr/\d{6}T\d{6}/;
 
 sub check_command {
     my ($cmd) = @_;
