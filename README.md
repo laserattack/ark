@@ -78,7 +78,7 @@ Notes (!!!!!!! PLS READ THIS !!!!!!!):
 
 # Examples
 
-This script was written for back up moderately important data to an external drive. Here's how I typically use it:
+This script was written for backing up moderately important data to an external drive. Here's how I typically use it:
 
 **Weekly full backup:**
 
