@@ -71,7 +71,7 @@ Notes (!!!!!!!PLS READ THIS!!!!!!!):
   7. IMPORTANT: After modifying include_paths.txt, create a new full backup (-f)
      The snar metadata file only tracks files that existed when it was created
      New paths won't be included in incremental backups without a fresh chain
-     This is how tar works. I don't like it either!
+     THIS IS HOW TAR WORKS. I DON'T LIKE IT EITHER!
 ```
 
 # Examples
