@@ -255,7 +255,7 @@ sub print_chains_structure {
     my ($backups_dir) = @_;
     my $chains_structure = get_chains_structure($backups_dir);
 
-    for my $i (0 .. $#$chains_structure) {
+    for (my $i = @$chains_structure; $i-- > 0;) {
         my ($chain_name, $backups) = @{$chains_structure->[$i]};
         my $backups_count = $#$backups + 1;
 
@@ -280,7 +280,7 @@ sub print_chains_structure {
             say "$prefix $backup_name [$backup_info]";
         }
 
-        say "" if $i < $#$chains_structure;
+        say "" if $i > 0;
     }
 }
 
