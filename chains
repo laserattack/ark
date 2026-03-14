@@ -87,7 +87,7 @@ sub usage {
     say "      --no-check-device      Ignore device number changes when";
     say "                             determining changed files";
     say "";
-    say "Notes (!!!!!!!PLS READ THIS!!!!!!!):";
+    say "Notes (!!!!!!! PLS READ THIS !!!!!!!):";
     say "  1. GNU TAR IS REQUIRED";
     say "";
     say "  2. Interrupting backup creation may leave incomplete archives";

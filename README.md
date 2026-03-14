@@ -12,6 +12,8 @@ This entire script is essentially a convenient interface to `tar`
 
 # Usage
 
+If you're brave enough to use this, read the **Notes** first!!!!!
+
 ```
 chains - incremental backups without any bullshit
 
@@ -55,7 +57,7 @@ Options:
       --no-check-device      Ignore device number changes when
                              determining changed files
 
-Notes (!!!!!!!PLS READ THIS!!!!!!!):
+Notes (!!!!!!! PLS READ THIS !!!!!!!):
   1. GNU TAR IS REQUIRED
 
   2. Interrupting backup creation may leave incomplete archives
