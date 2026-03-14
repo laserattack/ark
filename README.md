@@ -55,7 +55,7 @@ Options:
       --no-check-device      Ignore device number changes when
                              determining changed files
 
-Notes:
+Notes (!!!!!!!PLS READ THIS!!!!!!!):
   1. GNU TAR IS REQUIRED
 
   2. Interrupting backup creation may leave incomplete archives
@@ -67,6 +67,11 @@ Notes:
   5. CHECK AVAILABLE SPACE
 
   6. Run with sudo if backing up system files
+
+  7. IMPORTANT: After modifying include_paths.txt, create a new full backup (-f)
+     The snar metadata file only tracks files that existed when it was created
+     New paths won't be included in incremental backups without a fresh chain
+     This is how tar works. I don't like it either!
 ```
 
 # Examples
