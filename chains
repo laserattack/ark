@@ -604,10 +604,7 @@ sub find_chain_and_backup {
         foreach my $i (0 .. $#$backups) {
             my $backup      = $backups->[$i];
             my ($timestamp) = $backup =~ /^($TIMESTAMP_FORMAT)\.tar\.gz$/;
-
-            if ($timestamp eq $target_timestamp) {
-                return ($chain_name, $backups, $i);
-            }
+            return ($chain_name, $backups, $i) if $timestamp eq $target_timestamp;
         }
     }
 
